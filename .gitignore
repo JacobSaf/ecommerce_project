@@ -1,5 +1,27 @@
+# Ignore environment variables
+.env
+
+# Ignore virtual environment
+.venv/
 venv/
+
+# Ignore Python cache
 __pycache__/
 *.pyc
+
+# Ignore Sphinx build files
+docs/_build/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore SQLite database (if used locally)
 db.sqlite3
-.env
+
+# Ignore Docker-related files (optional)
+*.log
+
+# Ignore IDE settings
+.vscode/
+.idea/
