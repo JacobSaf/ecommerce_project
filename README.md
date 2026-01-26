@@ -111,6 +111,30 @@ python manage.py runserver
 7. Visit the site at:
 http://127.0.0.1:8000/
 
+Running with Docker
+1. Build the Docker image:
+docker build -t ecommerce_project
+
+2. Run the container:
+docker run -p 8000:8000 ecommerce_project
+
+Running with Docker Compose
+1. Ensure Docker and Docker Compose are installed.
+2. Start containers
+docker-compose up --build
+3. Apply migrations
+docker-compose exec web python manage.py migrate
+4. Create a superuser:
+docker-compose exec web python manage.py createsuperuser
+5. Access the app:
+http://localhost:8000
+
+Security Notes
+-Do NOT commit secrets (passwords, tokens) to GitHub.
+-Use a .env file for sensitive values.
+-Add .env to .gitignore
+
+
 Testing the Project
 -Register as a buyer or seller
 -Login/logout
