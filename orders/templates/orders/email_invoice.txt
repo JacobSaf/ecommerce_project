@@ -1,0 +1,6 @@
+Thank you for your order!
+
+Order ID: {{ order.id }}
+Total: ${{ order.total }}
+Billing Email: {{ order.billing_email }}
+Shipping Address: {{ order.shipping_address }}

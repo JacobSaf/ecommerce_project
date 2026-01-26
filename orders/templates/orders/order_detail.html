@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Order Details</h2>
+
+<p><strong>Order ID:</strong> {{ order.id }}</p>
+<p><strong>Total:</strong> ${{ order.total }}</p>
+<p><strong>Status:</strong> {{ order.status }}</p>
+<p><strong>Billing Email:</strong> {{ order.billing_email }}</p>
+<p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
+
+<h3>Items:</h3>
+<ul>
+    {% for item in order.items.all %}
+        <li>{{ item.product.name }} — Qty: {{ item.quantity }} — ${{ item.subtotal }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

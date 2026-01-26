@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}{{ product.name }}{% endblock %}
+
+<h1>{{ product.name }}</h1>
+
+<p><strong>Price:</strong> ${{ product.price }}</p>
+<p><strong>Stock:</strong> {{ product.stock }}</p>
+<p><strong>Description:</strong> {{ product.description }}</p>
+
+<!-- ⭐ Add to Cart button -->
+<a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary" style="margin: 10px 0;">
+    Add to Cart
+</a>
+
+<hr>
+
+{% if user.is_authenticated and product.store and product.store.owner == user %}
+    <a href="{% url 'edit_product' product.id %}">Edit Product</a> |
+    <a href="{% url 'delete_product' product.id %}">Delete Product</a> |
+    <a href="{% url 'add_product' %}">Add New Product</a>
+{% endif %}
+
+<br><br>
+<a href="{% url 'product_list' %}">Back to Products</a>
+
+<hr>
+
+<!-- ⭐ Review Form -->
+<h3>Leave a Review</h3>
+<form method="POST" action="{% url 'leave_review' product.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit Review</button>
+</form>
+
+<hr>
+
+<!-- ⭐ Review Display -->
+<h3>Reviews</h3>
+{% for review in product.reviews.all %}
+    <div class="review">
+        <strong>{{ review.user.username }}</strong>
+        {% if review.verified %}
+            <span class="badge bg-success">Verified Purchase</span>
+        {% else %}
+            <span class="badge bg-secondary">Unverified</span>
+        {% endif %}
+        <p>Rating: {{ review.rating }}/5</p>
+        <p>{{ review.comment }}</p>
+        <hr>
+    </div>
+{% empty %}
+    <p>No reviews yet.</p>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Order Confirmation</title>
+</head>
+<body>
+    <h2>Thank you for your order!</h2>
+    <p><strong>Order ID:</strong> {{ order.id }}</p>
+    <p><strong>Total:</strong> ${{ order.total }}</p>
+    <p><strong>Billing Email:</strong> {{ order.billing_email }}</p>
+    <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
+</body>
+</html>

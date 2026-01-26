@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}E-Commerce{% endblock %}</title>
+</head>
+<body>
+
+<nav>
+    {% if user.is_authenticated %}
+        <span>Welcome, {{ user.username }}</span> |
+
+        {% if user.is_seller %}
+            <!-- Seller Dashboard -->
+            <a href="{% url 'seller_dashboard' %}">Dashboard</a> |
+        {% else %}
+            <!-- Buyer Dashboard -->
+            <a href="{% url 'buyer_dashboard' %}">Dashboard</a> |
+        {% endif %}
+
+        <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a> |
+        <a href="{% url 'register' %}">Register</a>
+    {% endif %}
+    |
+    <a href="{% url 'product_list' %}">Products</a>
+    |
+    <!-- ⭐ Continue Shopping Button -->
+    <a href="{% url 'product_list' %}" style="font-weight: bold;">Continue Shopping</a>
+</nav>
+
+<hr>
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>
