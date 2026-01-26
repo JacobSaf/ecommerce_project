@@ -1,3 +1,10 @@
+"""
+HTML and API views for managing seller-owned stores.
+
+Includes CRUD views for store management and REST API endpoints for
+listing and creating stores within the marketplace.
+"""
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Store
@@ -36,8 +43,8 @@ def store_list(request):
     """
     Display a list of all stores owned by the authenticated user.
 
-    This view is restricted to logged-in users and shows only the
-    stores where the current user is the owner.
+    Restricted to logged-in users and shows only stores where the
+    current user is the owner.
     """
     stores = Store.objects.filter(owner=request.user)
     return render(request, "stores/store_list.html", {"stores": stores})
@@ -48,10 +55,10 @@ def create_store(request):
     """
     Allow a user to create a new store.
 
-    Handles both GET and POST:
+    Handles GET and POST:
     - GET: Display an empty store creation form.
-    - POST: Validate and save the store, assign the current user as owner,
-      and optionally post a tweet announcing the new store.
+    - POST: Validate and save the store, assign the current user as
+      owner, and optionally post a tweet announcing the new store.
 
     If a logo is uploaded, the tweet includes the image.
     """
@@ -123,7 +130,6 @@ def edit_store(request, store_id):
 # -----------------------------------------
 # SECTION B: API VIEWS (REST FRAMEWORK)
 # -----------------------------------------
-
 
 class StoreListCreateView(generics.ListCreateAPIView):
     """

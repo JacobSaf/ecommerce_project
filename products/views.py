@@ -1,3 +1,10 @@
+"""
+HTML and API views for managing products.
+
+Includes seller-facing CRUD views for product management and REST API
+endpoints for listing and creating products associated with a store.
+"""
+
 # -------------------------
 # CLEAN IMPORTS AT THE TOP
 # -------------------------

@@ -1,3 +1,11 @@
+"""
+Views and helper functions for managing carts and cart-related tasks.
+
+Includes utilities for both authenticated users (database-backed carts)
+and guest users (session-backed carts), as well as shared cart actions
+such as adding items and rendering cart pages.
+"""
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -18,8 +26,9 @@ def get_user_cart(user):
     """
     Retrieve or create the authenticated user's cart.
 
-    Ensures each logged-in user has exactly one persistent Cart object.
+    Guarantees the user always has one persistent Cart.
     """
+
     cart, created = Cart.objects.get_or_create(user=user)
     return cart
 
@@ -42,7 +51,7 @@ def get_session_cart(request):
 
 def save_session_cart(request, cart):
     """
-    Save the updated guest cart back into the session.
+    Persist the updated guest cart back into the session.
     """
     request.session["cart"] = cart
     request.session.modified = True
@@ -64,7 +73,7 @@ def update_session_cart_item(request, product_id, quantity):
     """
     Update the quantity of a product in the guest session cart.
 
-    If quantity <= 0, the item is removed.
+    If quantity <= 0, the item is removed entirely.
     """
     cart = get_session_cart(request)
     pid = str(product_id)
@@ -92,17 +101,18 @@ def remove_from_session_cart(request, product_id):
 
 def get_session_cart_items_with_totals(request):
     """
-    Build a detailed list of guest cart items and compute the total.
+    Build a detailed list of guest cart items and add the total cost.
 
     Returns:
-        items (list of dict):
-            {
-                "product": Product instance,
-                "quantity": int,
-                "subtotal": Decimal
-            }
+        tuple:
+            items (list of dict):
+                {
+                    "product": Product instance,
+                    "quantity": int,
+                    "subtotal": Decimal,
+                }
 
-        total (Decimal): Sum of all subtotals.
+            total (Decimal): Sum of all item subtotals.
     """
     cart = get_session_cart(request)
     product_ids = [int(pid) for pid in cart.keys()]
@@ -143,7 +153,11 @@ def add_to_cart(request, product_id):
 
     if request.user.is_authenticated:
         cart = get_user_cart(request.user)
-        item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        item, created = CartItem.objects.get_or_create(
+            cart=cart,
+            product=product,
+        )
+
 
         if not created:
             item.quantity += 1
@@ -172,11 +186,21 @@ def view_cart(request):
             cart = Cart.objects.create(user=request.user)
 
         items = cart.items.select_related("product")
-        return render(request, "orders/cart.html", {"cart": cart, "items": items})
+        return render(
+            request,
+            "orders/cart.html",
+            {"cart": cart, "items": items},
+        )
+
 
     # Guest cart
     items, total = get_session_cart_items_with_totals(request)
-    return render(request, "orders/guest_cart.html", {"items": items, "total": total})
+    return render(
+        request,
+        "orders/guest_cart.html",
+        {"items": items, "total": total},
+    )
+
 
 
 # ============================
@@ -187,7 +211,9 @@ def update_cart_item(request, item_id):
     """
     Update the quantity of a CartItem for a logged-in user.
 
-    If quantity <= 0, the item is removed.
+    If the new quantity is less than or equal to zero,
+      the item is removed
+    from the cart. Otherwise, the quantity is updated accordingly.
     """
     cart = get_user_cart(request.user)
     item = get_object_or_404(CartItem, id=item_id, cart=cart)
@@ -228,7 +254,7 @@ def update_guest_cart_item(request, product_id):
     """
     Update the quantity of a product in the guest session cart.
 
-    If quantity <= 0, the item is removed.
+    If the new quantity is zero or less, the item is removed.
     """
     try:
         new_qty = int(request.POST.get("quantity", 1))
@@ -247,7 +273,7 @@ def update_guest_cart_item(request, product_id):
 
 def remove_guest_cart_item(request, product_id):
     """
-    Remove a product from the guest session cart.
+    Remove a product entirely from the guest session cart.
     """
     remove_from_session_cart(request, product_id)
     messages.info(request, "Item removed from cart.")
@@ -263,15 +289,16 @@ def checkout(request):
     """
     Process checkout for a logged-in user.
 
-    Steps:
-        1. Validate cart is not empty.
-        2. Validate stock for each item.
-        3. Create Order.
-        4. Create OrderItems and deduct stock.
-        5. Clear the cart.
-        6. Send invoice email.
+    Workflow:
+        1. Ensure the cart is not empty.
+        2. Validate stock availability for each item.
+        3. Create an Order instance.
+        4. Create OrderItems and deduct product stock.
+        5. Clear the user's cart.
+        6. Send an invoice email.
 
-    Wrapped in a database transaction to ensure atomicity.
+    The entire operation is wrapped in a database transaction to ensure
+    atomicity and prevent partial order creation.
     """
     cart = get_user_cart(request.user)
     items = cart.items.select_related("product")
@@ -285,7 +312,8 @@ def checkout(request):
         if item.quantity > item.product.stock:
             messages.error(
                 request,
-                f"Not enough stock for {item.product.name}. Available: {item.product.stock}"
+                f"Not enough stock for {item.product.name}. "
+                f"Available: {item.product.stock}"
             )
             return redirect("view_cart")
 
@@ -317,7 +345,11 @@ def checkout(request):
     # Send invoice
     send_order_invoice_email(order)
 
-    messages.success(request, "Checkout successful! Your order has been placed.")
+    messages.success(
+        request,
+        "Checkout successful! Your order has been placed.",
+    )
+
     return redirect("order_detail", order_id=order.id)
 
 
@@ -329,14 +361,17 @@ def guest_checkout(request):
     """
     Process checkout for a guest user using the session cart.
 
-    Steps:
-        1. Validate cart is not empty.
-        2. Validate stock.
-        3. Collect guest billing/shipping info.
-        4. Create Order with guest fields.
-        5. Create OrderItems and deduct stock.
-        6. Clear session cart.
-        7. Send invoice email.
+    Workflow:
+        1. Ensure the cart is not empty.
+        2. Validate stock availability for each item.
+        3. Collect guest billing and shipping information.
+        4. Create an Order instance with guest-specific fields.
+        5. Create OrderItems and deduct product stock.
+        6. Clear the session cart.
+        7. Send an invoice email.
+
+    The entire operation is wrapped in a database transaction to ensure
+    atomicity and prevent partial order creation.
     """
     items, total = get_session_cart_items_with_totals(request)
 
@@ -348,6 +383,7 @@ def guest_checkout(request):
     for item in items:
         product = item["product"]
         quantity = item["quantity"]
+
         if quantity > product.stock:
             messages.error(
                 request,
@@ -397,7 +433,11 @@ def guest_checkout(request):
             # Send invoice
             send_order_invoice_email(order)
 
-            messages.success(request, "Checkout successful! Your order has been placed.")
+            messages.success(
+                request,
+                "Checkout successful! "
+                "Your order has been placed."
+                )
             return redirect("order_detail", order_id=order.id)
     else:
         form = GuestCheckoutForm()
@@ -416,14 +456,17 @@ def order_detail(request, order_id):
     """
     Display the details of a specific order.
 
-    If the order belongs to a logged-in user, ensure only that user
-    can view it. Guest orders can be viewed by anyone with the link.
+    For authenticated users, ensure that only the owner of the order
+    may view it. Guest orders may be viewed by anyone with the link.
     """
     order = get_object_or_404(Order, id=order_id)
 
     if order.user and request.user.is_authenticated:
         if order.user != request.user:
-            messages.error(request, "You do not have permission to view this order.")
+            messages.error(
+                request,
+                "You do not have permission to view this order.",
+            )
             return redirect("product_list")
 
     return render(request, "orders/order_detail.html", {"order": order})
@@ -437,8 +480,8 @@ def send_order_invoice_email(order):
     Send an invoice email for the given order.
 
     Uses both a plain-text and HTML template. Sends to:
-        - order.billing_email (logged-in users)
-        - order.guest_email (guest checkout)
+        - order.billing_email (for logged-in users)
+        - order.guest_email (for guest checkout)
     """
     subject = f"Your Order #{order.id} Invoice"
     context = {"order": order}

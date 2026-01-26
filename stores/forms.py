@@ -1,3 +1,9 @@
+"""
+Forms for creating and updating stores.
+
+Provides a ModelForm used by sellers to manage their store information.
+"""
+
 from django import forms
 from .models import Store
 

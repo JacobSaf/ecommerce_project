@@ -1,3 +1,11 @@
+"""
+Models for seller-owned storefronts.
+
+Defines the Store model, which represents a seller’s storefront within
+the marketplace and groups products under a single brand or identity.
+"""
+
+
 from django.db import models
 from django.conf import settings
 

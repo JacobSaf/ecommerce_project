@@ -1,3 +1,11 @@
+"""
+Models for user-submitted product reviews.
+
+Defines the Review model, which stores ratings, comments, and verified
+purchase status for products within the e-commerce platform.
+"""
+
+
 from django.conf import settings
 from django.db import models
 from products.models import Product

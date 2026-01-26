@@ -1,3 +1,10 @@
+"""
+HTML and API views for managing product reviews.
+
+Includes a form-based view for submitting reviews and a REST API
+endpoint for retrieving reviews associated with a specific product.
+"""
+
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Review
 from .forms import ReviewForm
@@ -17,16 +24,16 @@ def leave_review(request, product_id):
     """
     Allow a user to leave a review for a specific product.
 
-    Handles both GET and POST:
+    Handles GET and POST:
     - GET: Display an empty review form.
-    - POST: Validate and save the review, automatically attaching the
-      authenticated user and the product being reviewed.
+    - POST: Validate and save the review, attaching the authenticated
+      user and the product being reviewed.
 
     Verification:
         A review is marked as "verified" if the user has previously
-        purchased the product (checked via OrderItem records).
+        purchased the product, determined via OrderItem records.
 
-    After submission, the user is redirected back to the product detail page.
+    After submission, the user is redirected to the product detail page.
     """
     product = get_object_or_404(Product, id=product_id)
 
@@ -66,15 +73,15 @@ class ProductReviewListView(generics.ListAPIView):
     API endpoint for retrieving all reviews for a specific product.
 
     GET:
-        Return a list of all Review objects associated with the product
-        whose ID is provided in the URL path.
+        Return all Review objects associated with the product whose ID
+        is provided in the URL path.
     """
     serializer_class = ReviewSerializer
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         """
-        Filter reviews by the product ID provided in the URL.
+        Return reviews filtered by the product ID provided in the URL.
         """
         product_id = self.kwargs["product_id"]
         return Review.objects.filter(product_id=product_id)
