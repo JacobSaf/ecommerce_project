@@ -1,0 +1,582 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stores package &mdash; ecommerce_project 00.00.01 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d7bb8d4d"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ecommerce_project
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">stores package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-stores.admin">stores.admin module</a></li>
+<li><a class="reference internal" href="#module-stores.apps">stores.apps module</a><ul>
+<li><a class="reference internal" href="#stores.apps.StoresConfig"><code class="docutils literal notranslate"><span class="pre">StoresConfig</span></code></a><ul>
+<li><a class="reference internal" href="#stores.apps.StoresConfig.name"><code class="docutils literal notranslate"><span class="pre">StoresConfig.name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-stores.forms">stores.forms module</a><ul>
+<li><a class="reference internal" href="#stores.forms.StoreForm"><code class="docutils literal notranslate"><span class="pre">StoreForm</span></code></a><ul>
+<li><a class="reference internal" href="#stores.forms.StoreForm.Meta"><code class="docutils literal notranslate"><span class="pre">StoreForm.Meta</span></code></a><ul>
+<li><a class="reference internal" href="#stores.forms.StoreForm.Meta.fields"><code class="docutils literal notranslate"><span class="pre">StoreForm.Meta.fields</span></code></a></li>
+<li><a class="reference internal" href="#stores.forms.StoreForm.Meta.model"><code class="docutils literal notranslate"><span class="pre">StoreForm.Meta.model</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#stores.forms.StoreForm.base_fields"><code class="docutils literal notranslate"><span class="pre">StoreForm.base_fields</span></code></a></li>
+<li><a class="reference internal" href="#stores.forms.StoreForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">StoreForm.declared_fields</span></code></a></li>
+<li><a class="reference internal" href="#stores.forms.StoreForm.media"><code class="docutils literal notranslate"><span class="pre">StoreForm.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-stores.models">stores.models module</a><ul>
+<li><a class="reference internal" href="#stores.models.Store"><code class="docutils literal notranslate"><span class="pre">Store</span></code></a><ul>
+<li><a class="reference internal" href="#stores.models.Store.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Store.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Store.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.NotUpdated"><code class="docutils literal notranslate"><span class="pre">Store.NotUpdated</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.created_at"><code class="docutils literal notranslate"><span class="pre">Store.created_at</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.description"><code class="docutils literal notranslate"><span class="pre">Store.description</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.get_next_by_created_at"><code class="docutils literal notranslate"><span class="pre">Store.get_next_by_created_at()</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.get_previous_by_created_at"><code class="docutils literal notranslate"><span class="pre">Store.get_previous_by_created_at()</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.id"><code class="docutils literal notranslate"><span class="pre">Store.id</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.name"><code class="docutils literal notranslate"><span class="pre">Store.name</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.objects"><code class="docutils literal notranslate"><span class="pre">Store.objects</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.owner"><code class="docutils literal notranslate"><span class="pre">Store.owner</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.owner_id"><code class="docutils literal notranslate"><span class="pre">Store.owner_id</span></code></a></li>
+<li><a class="reference internal" href="#stores.models.Store.products"><code class="docutils literal notranslate"><span class="pre">Store.products</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-stores.serializers">stores.serializers module</a><ul>
+<li><a class="reference internal" href="#stores.serializers.StoreSerializer"><code class="docutils literal notranslate"><span class="pre">StoreSerializer</span></code></a><ul>
+<li><a class="reference internal" href="#stores.serializers.StoreSerializer.Meta"><code class="docutils literal notranslate"><span class="pre">StoreSerializer.Meta</span></code></a><ul>
+<li><a class="reference internal" href="#stores.serializers.StoreSerializer.Meta.fields"><code class="docutils literal notranslate"><span class="pre">StoreSerializer.Meta.fields</span></code></a></li>
+<li><a class="reference internal" href="#stores.serializers.StoreSerializer.Meta.model"><code class="docutils literal notranslate"><span class="pre">StoreSerializer.Meta.model</span></code></a></li>
+<li><a class="reference internal" href="#stores.serializers.StoreSerializer.Meta.read_only_fields"><code class="docutils literal notranslate"><span class="pre">StoreSerializer.Meta.read_only_fields</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-stores.tests">stores.tests module</a></li>
+<li><a class="reference internal" href="#module-stores.urls">stores.urls module</a></li>
+<li><a class="reference internal" href="#module-stores.views">stores.views module</a><ul>
+<li><a class="reference internal" href="#stores.views.StoreListCreateView"><code class="docutils literal notranslate"><span class="pre">StoreListCreateView</span></code></a><ul>
+<li><a class="reference internal" href="#stores.views.StoreListCreateView.perform_create"><code class="docutils literal notranslate"><span class="pre">StoreListCreateView.perform_create()</span></code></a></li>
+<li><a class="reference internal" href="#stores.views.StoreListCreateView.permission_classes"><code class="docutils literal notranslate"><span class="pre">StoreListCreateView.permission_classes</span></code></a></li>
+<li><a class="reference internal" href="#stores.views.StoreListCreateView.queryset"><code class="docutils literal notranslate"><span class="pre">StoreListCreateView.queryset</span></code></a></li>
+<li><a class="reference internal" href="#stores.views.StoreListCreateView.serializer_class"><code class="docutils literal notranslate"><span class="pre">StoreListCreateView.serializer_class</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#stores.views.VendorStoreListView"><code class="docutils literal notranslate"><span class="pre">VendorStoreListView</span></code></a><ul>
+<li><a class="reference internal" href="#stores.views.VendorStoreListView.get_queryset"><code class="docutils literal notranslate"><span class="pre">VendorStoreListView.get_queryset()</span></code></a></li>
+<li><a class="reference internal" href="#stores.views.VendorStoreListView.permission_classes"><code class="docutils literal notranslate"><span class="pre">VendorStoreListView.permission_classes</span></code></a></li>
+<li><a class="reference internal" href="#stores.views.VendorStoreListView.serializer_class"><code class="docutils literal notranslate"><span class="pre">VendorStoreListView.serializer_class</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#stores.views.create_store"><code class="docutils literal notranslate"><span class="pre">create_store()</span></code></a></li>
+<li><a class="reference internal" href="#stores.views.delete_store"><code class="docutils literal notranslate"><span class="pre">delete_store()</span></code></a></li>
+<li><a class="reference internal" href="#stores.views.edit_store"><code class="docutils literal notranslate"><span class="pre">edit_store()</span></code></a></li>
+<li><a class="reference internal" href="#stores.views.store_list"><code class="docutils literal notranslate"><span class="pre">store_list()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-stores">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ecommerce_project</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">stores package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/stores.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="stores-package">
+<h1>stores package<a class="headerlink" href="#stores-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="stores.migrations.html">stores.migrations package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stores.migrations.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stores.migrations.html#module-stores.migrations.0001_initial">stores.migrations.0001_initial module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="stores.migrations.html#stores.migrations.0001_initial.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="stores.migrations.html#stores.migrations.0001_initial.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="stores.migrations.html#stores.migrations.0001_initial.Migration.initial"><code class="docutils literal notranslate"><span class="pre">Migration.initial</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="stores.migrations.html#stores.migrations.0001_initial.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="stores.migrations.html#module-stores.migrations.0002_alter_store_owner">stores.migrations.0002_alter_store_owner module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="stores.migrations.html#stores.migrations.0002_alter_store_owner.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="stores.migrations.html#stores.migrations.0002_alter_store_owner.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="stores.migrations.html#stores.migrations.0002_alter_store_owner.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="stores.migrations.html#module-stores.migrations">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-stores.admin">
+<span id="stores-admin-module"></span><h2>stores.admin module<a class="headerlink" href="#module-stores.admin" title="Link to this heading"></a></h2>
+</section>
+<section id="module-stores.apps">
+<span id="stores-apps-module"></span><h2>stores.apps module<a class="headerlink" href="#module-stores.apps" title="Link to this heading"></a></h2>
+<p>Application configuration for the stores app.</p>
+<p>Defines the StoresConfig class used by Django to register and
+initialize the stores application within the project.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="stores.apps.StoresConfig">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">stores.apps.</span></span><span class="sig-name descname"><span class="pre">StoresConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/apps.html#StoresConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.apps.StoresConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
+<p>Configuration class for the stores application.</p>
+<p>Specifies the app name so Django can correctly identify and load
+the stores app during project initialization.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.apps.StoresConfig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'stores'</span></span><a class="headerlink" href="#stores.apps.StoresConfig.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-stores.forms">
+<span id="stores-forms-module"></span><h2>stores.forms module<a class="headerlink" href="#module-stores.forms" title="Link to this heading"></a></h2>
+<p>Forms for creating and updating stores.</p>
+<p>Provides a ModelForm used by sellers to manage their store information.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="stores.forms.StoreForm">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">stores.forms.</span></span><span class="sig-name descname"><span class="pre">StoreForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/forms.html#StoreForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.forms.StoreForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Form used by sellers to create or update a store.</p>
+<dl class="simple">
+<dt>This form exposes the editable fields of a Store:</dt><dd><ul class="simple">
+<li><p>name: The public-facing name of the store.</p></li>
+<li><p>description: Optional text describing the store’s purpose,
+branding, or mission.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The owner field is intentionally excluded because it is assigned
+automatically in the view logic based on the authenticated user.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="stores.forms.StoreForm.Meta">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/stores/forms.html#StoreForm.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.forms.StoreForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.forms.StoreForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['name',</span> <span class="pre">'description']</span></span><a class="headerlink" href="#stores.forms.StoreForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.forms.StoreForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#stores.forms.StoreForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#stores.models.Store" title="stores.models.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.forms.StoreForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'description':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></span><a class="headerlink" href="#stores.forms.StoreForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.forms.StoreForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#stores.forms.StoreForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="stores.forms.StoreForm.media">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#stores.forms.StoreForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-stores.models">
+<span id="stores-models-module"></span><h2>stores.models module<a class="headerlink" href="#module-stores.models" title="Link to this heading"></a></h2>
+<p>Models for seller-owned storefronts.</p>
+<p>Defines the Store model, which represents a seller’s storefront within
+the marketplace and groups products under a single brand or identity.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="stores.models.Store">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">stores.models.</span></span><span class="sig-name descname"><span class="pre">Store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/models.html#Store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.models.Store" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Represents a seller-owned storefront within the marketplace.</p>
+<p>A store groups together products under a single brand or identity.
+Each store is owned by a specific user (seller), and deleting the
+owner will remove all associated stores.</p>
+<dl class="simple">
+<dt>Fields:</dt><dd><dl class="simple">
+<dt>name:</dt><dd><p>The public-facing name of the store.</p>
+</dd>
+<dt>description:</dt><dd><p>Optional text describing the store, its purpose, or branding.</p>
+</dd>
+<dt>owner:</dt><dd><p>The user who created and manages the store. Only the owner
+may edit or delete the store.</p>
+</dd>
+<dt>created_at:</dt><dd><p>Timestamp indicating when the store was created. Useful for
+sorting and analytics.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="stores.models.Store.DoesNotExist">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#stores.models.Store.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="stores.models.Store.MultipleObjectsReturned">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#stores.models.Store.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="stores.models.Store.NotUpdated">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">NotUpdated</span></span><a class="headerlink" href="#stores.models.Store.NotUpdated" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectNotUpdated</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseError</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.models.Store.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#stores.models.Store.created_at" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.models.Store.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#stores.models.Store.description" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="stores.models.Store.get_next_by_created_at">
+<span class="sig-name descname"><span class="pre">get_next_by_created_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_at&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stores.models.Store.get_next_by_created_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="stores.models.Store.get_previous_by_created_at">
+<span class="sig-name descname"><span class="pre">get_previous_by_created_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_at&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stores.models.Store.get_previous_by_created_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.models.Store.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#stores.models.Store.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.models.Store.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#stores.models.Store.name" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.models.Store.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></span><a class="headerlink" href="#stores.models.Store.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.models.Store.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#stores.models.Store.owner" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.models.Store.owner_id">
+<span class="sig-name descname"><span class="pre">owner_id</span></span><a class="headerlink" href="#stores.models.Store.owner_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.models.Store.products">
+<span class="sig-name descname"><span class="pre">products</span></span><a class="headerlink" href="#stores.models.Store.products" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_reverse_many_to_one_manager()</span></code> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-stores.serializers">
+<span id="stores-serializers-module"></span><h2>stores.serializers module<a class="headerlink" href="#module-stores.serializers" title="Link to this heading"></a></h2>
+<p>Serializers for the stores app.</p>
+<p>Provides a ModelSerializer for converting Store instances to and from
+JSON for API interactions.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="stores.serializers.StoreSerializer">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">stores.serializers.</span></span><span class="sig-name descname"><span class="pre">StoreSerializer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/serializers.html#StoreSerializer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.serializers.StoreSerializer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelSerializer</span></code></p>
+<p>Serializer for converting Store model instances to and from JSON.</p>
+<dl class="simple">
+<dt>Exposes the key fields needed for API interactions:</dt><dd><ul class="simple">
+<li><p>id: Unique identifier for the store.</p></li>
+<li><p>name: Public-facing store name.</p></li>
+<li><p>description: Optional text describing the store.</p></li>
+<li><p>owner: The user who created and manages the store (read-only).</p></li>
+</ul>
+</dd>
+</dl>
+<p>The <cite>owner</cite> field is read-only because it is assigned automatically
+in the API view logic based on the authenticated user.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="stores.serializers.StoreSerializer.Meta">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/stores/serializers.html#StoreSerializer.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.serializers.StoreSerializer.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.serializers.StoreSerializer.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['id',</span> <span class="pre">'name',</span> <span class="pre">'description',</span> <span class="pre">'owner']</span></span><a class="headerlink" href="#stores.serializers.StoreSerializer.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.serializers.StoreSerializer.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#stores.serializers.StoreSerializer.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#stores.models.Store" title="stores.models.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.serializers.StoreSerializer.Meta.read_only_fields">
+<span class="sig-name descname"><span class="pre">read_only_fields</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['owner']</span></span><a class="headerlink" href="#stores.serializers.StoreSerializer.Meta.read_only_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-stores.tests">
+<span id="stores-tests-module"></span><h2>stores.tests module<a class="headerlink" href="#module-stores.tests" title="Link to this heading"></a></h2>
+</section>
+<section id="module-stores.urls">
+<span id="stores-urls-module"></span><h2>stores.urls module<a class="headerlink" href="#module-stores.urls" title="Link to this heading"></a></h2>
+</section>
+<section id="module-stores.views">
+<span id="stores-views-module"></span><h2>stores.views module<a class="headerlink" href="#module-stores.views" title="Link to this heading"></a></h2>
+<p>HTML and API views for managing seller-owned stores.</p>
+<p>Includes CRUD views for store management and REST API endpoints for
+listing and creating stores within the marketplace.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="stores.views.StoreListCreateView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">stores.views.</span></span><span class="sig-name descname"><span class="pre">StoreListCreateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/views.html#StoreListCreateView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.views.StoreListCreateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ListCreateAPIView</span></code></p>
+<p>API endpoint for listing and creating stores.</p>
+<dl class="simple">
+<dt>GET:</dt><dd><p>Return a list of all stores in the system.</p>
+</dd>
+<dt>POST:</dt><dd><p>Create a new store owned by the authenticated user.
+Only logged-in users may create stores.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="stores.views.StoreListCreateView.perform_create">
+<span class="sig-name descname"><span class="pre">perform_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/views.html#StoreListCreateView.perform_create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.views.StoreListCreateView.perform_create" title="Link to this definition"></a></dt>
+<dd><p>Assign the authenticated user as the store owner during creation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.views.StoreListCreateView.permission_classes">
+<span class="sig-name descname"><span class="pre">permission_classes</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;class</span> <span class="pre">'rest_framework.permissions.IsAuthenticatedOrReadOnly'&gt;]</span></span><a class="headerlink" href="#stores.views.StoreListCreateView.permission_classes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.views.StoreListCreateView.queryset">
+<span class="sig-name descname"><span class="pre">queryset</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;QuerySet</span> <span class="pre">[&lt;Store:</span> <span class="pre">Default</span> <span class="pre">Store&gt;,</span> <span class="pre">&lt;Store:</span> <span class="pre">Greater</span> <span class="pre">Buy&gt;,</span> <span class="pre">&lt;Store:</span> <span class="pre">Lessser</span> <span class="pre">Buy&gt;,</span> <span class="pre">&lt;Store:</span> <span class="pre">Medium</span> <span class="pre">Buy&gt;]&gt;</span></span><a class="headerlink" href="#stores.views.StoreListCreateView.queryset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.views.StoreListCreateView.serializer_class">
+<span class="sig-name descname"><span class="pre">serializer_class</span></span><a class="headerlink" href="#stores.views.StoreListCreateView.serializer_class" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#stores.serializers.StoreSerializer" title="stores.serializers.StoreSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoreSerializer</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="stores.views.VendorStoreListView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">stores.views.</span></span><span class="sig-name descname"><span class="pre">VendorStoreListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/views.html#VendorStoreListView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.views.VendorStoreListView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ListAPIView</span></code></p>
+<p>API endpoint for listing stores belonging to a specific vendor.</p>
+<dl class="simple">
+<dt>GET:</dt><dd><p>Return all stores owned by the vendor whose ID is provided
+in the URL path.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="stores.views.VendorStoreListView.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/views.html#VendorStoreListView.get_queryset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.views.VendorStoreListView.get_queryset" title="Link to this definition"></a></dt>
+<dd><p>Filter stores by the vendor ID provided in the URL.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.views.VendorStoreListView.permission_classes">
+<span class="sig-name descname"><span class="pre">permission_classes</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;class</span> <span class="pre">'rest_framework.permissions.AllowAny'&gt;]</span></span><a class="headerlink" href="#stores.views.VendorStoreListView.permission_classes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="stores.views.VendorStoreListView.serializer_class">
+<span class="sig-name descname"><span class="pre">serializer_class</span></span><a class="headerlink" href="#stores.views.VendorStoreListView.serializer_class" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#stores.serializers.StoreSerializer" title="stores.serializers.StoreSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoreSerializer</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stores.views.create_store">
+<span class="sig-prename descclassname"><span class="pre">stores.views.</span></span><span class="sig-name descname"><span class="pre">create_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/views.html#create_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.views.create_store" title="Link to this definition"></a></dt>
+<dd><p>Allow a user to create a new store.</p>
+<p>Handles GET and POST:
+- GET: Display an empty store creation form.
+- POST: Validate and save the store, assign the current user as</p>
+<blockquote>
+<div><p>owner, and optionally post a tweet announcing the new store.</p>
+</div></blockquote>
+<p>If a logo is uploaded, the tweet includes the image.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stores.views.delete_store">
+<span class="sig-prename descclassname"><span class="pre">stores.views.</span></span><span class="sig-name descname"><span class="pre">delete_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/views.html#delete_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.views.delete_store" title="Link to this definition"></a></dt>
+<dd><p>Delete a store owned by the authenticated user.</p>
+<p>Ensures the store belongs to the current user before deleting it.
+After deletion, the user is redirected back to their store list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stores.views.edit_store">
+<span class="sig-prename descclassname"><span class="pre">stores.views.</span></span><span class="sig-name descname"><span class="pre">edit_store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/views.html#edit_store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.views.edit_store" title="Link to this definition"></a></dt>
+<dd><p>Allow a user to edit one of their stores.</p>
+<p>Ensures the store belongs to the authenticated user.
+Supports GET (load form) and POST (save changes).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stores.views.store_list">
+<span class="sig-prename descclassname"><span class="pre">stores.views.</span></span><span class="sig-name descname"><span class="pre">store_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stores/views.html#store_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stores.views.store_list" title="Link to this definition"></a></dt>
+<dd><p>Display a list of all stores owned by the authenticated user.</p>
+<p>Restricted to logged-in users and shows only stores where the
+current user is the owner.</p>
+</dd></dl>
+
+</section>
+<section id="module-stores">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-stores" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Jacob Saftig.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

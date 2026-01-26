@@ -1,0 +1,651 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>orders.views &mdash; ecommerce_project 00.00.01 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d7bb8d4d"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            ecommerce_project
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ecommerce_project</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">orders.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for orders.views</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Views and helper functions for managing carts and cart-related tasks.</span>
+
+<span class="sd">Includes utilities for both authenticated users (database-backed carts)</span>
+<span class="sd">and guest users (session-backed carts), as well as shared cart actions</span>
+<span class="sd">such as adding items and rendering cart pages.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">transaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.mail</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_mail</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.template.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">render_to_string</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cart</span><span class="p">,</span> <span class="n">CartItem</span><span class="p">,</span> <span class="n">Order</span><span class="p">,</span> <span class="n">OrderItem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">GuestCheckoutForm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">products.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Product</span>
+
+
+<span class="c1"># -----------------------------</span>
+<span class="c1"># Helper: Get or create DB cart (logged-in)</span>
+<span class="c1"># -----------------------------</span>
+<div class="viewcode-block" id="get_user_cart">
+<a class="viewcode-back" href="../../orders.html#orders.views.get_user_cart">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_user_cart</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve or create the authenticated user&#39;s cart.</span>
+
+<span class="sd">    Guarantees the user always has one persistent Cart.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cart</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">Cart</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cart</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1"># Helpers: Session cart (guest)</span>
+<span class="c1"># ============================</span>
+<div class="viewcode-block" id="get_session_cart">
+<a class="viewcode-back" href="../../orders.html#orders.views.get_session_cart">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the guest cart stored in the session.</span>
+
+<span class="sd">    The session cart structure is:</span>
+<span class="sd">        {</span>
+<span class="sd">            &quot;product_id_as_str&quot;: quantity_int,</span>
+<span class="sd">            ...</span>
+<span class="sd">        }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cart&quot;</span><span class="p">,</span> <span class="p">{})</span></div>
+
+
+
+<div class="viewcode-block" id="save_session_cart">
+<a class="viewcode-back" href="../../orders.html#orders.views.save_session_cart">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">cart</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Persist the updated guest cart back into the session.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;cart&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cart</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">modified</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="add_to_session_cart">
+<a class="viewcode-back" href="../../orders.html#orders.views.add_to_session_cart">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_to_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a product to the guest session cart.</span>
+
+<span class="sd">    If the product already exists, its quantity is incremented.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cart</span> <span class="o">=</span> <span class="n">get_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">product_id</span><span class="p">)</span>
+    <span class="n">cart</span><span class="p">[</span><span class="n">pid</span><span class="p">]</span> <span class="o">=</span> <span class="n">cart</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">quantity</span>
+    <span class="n">save_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">cart</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="update_session_cart_item">
+<a class="viewcode-back" href="../../orders.html#orders.views.update_session_cart_item">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_session_cart_item</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">quantity</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the quantity of a product in the guest session cart.</span>
+
+<span class="sd">    If quantity &lt;= 0, the item is removed entirely.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cart</span> <span class="o">=</span> <span class="n">get_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">product_id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">quantity</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">cart</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cart</span><span class="p">[</span><span class="n">pid</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantity</span>
+
+    <span class="n">save_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">cart</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="remove_from_session_cart">
+<a class="viewcode-back" href="../../orders.html#orders.views.remove_from_session_cart">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_from_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">product_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove a product entirely from the guest session cart.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cart</span> <span class="o">=</span> <span class="n">get_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">product_id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">cart</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">cart</span><span class="p">[</span><span class="n">pid</span><span class="p">]</span>
+
+    <span class="n">save_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">cart</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_session_cart_items_with_totals">
+<a class="viewcode-back" href="../../orders.html#orders.views.get_session_cart_items_with_totals">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_session_cart_items_with_totals</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a detailed list of guest cart items and add the total cost.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple:</span>
+<span class="sd">            items (list of dict):</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;product&quot;: Product instance,</span>
+<span class="sd">                    &quot;quantity&quot;: int,</span>
+<span class="sd">                    &quot;subtotal&quot;: Decimal,</span>
+<span class="sd">                }</span>
+
+<span class="sd">            total (Decimal): Sum of all item subtotals.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cart</span> <span class="o">=</span> <span class="n">get_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="n">product_ids</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span> <span class="k">for</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">cart</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+    <span class="n">products</span> <span class="o">=</span> <span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">product_ids</span><span class="p">)</span>
+
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">product_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">products</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">pid_str</span><span class="p">,</span> <span class="n">qty</span> <span class="ow">in</span> <span class="n">cart</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pid_str</span><span class="p">)</span>
+        <span class="n">product</span> <span class="o">=</span> <span class="n">product_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">product</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">subtotal</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">price</span> <span class="o">*</span> <span class="n">qty</span>
+        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="n">product</span><span class="p">,</span>
+            <span class="s2">&quot;quantity&quot;</span><span class="p">:</span> <span class="n">qty</span><span class="p">,</span>
+            <span class="s2">&quot;subtotal&quot;</span><span class="p">:</span> <span class="n">subtotal</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">subtotal</span>
+
+    <span class="k">return</span> <span class="n">items</span><span class="p">,</span> <span class="n">total</span></div>
+
+
+
+<span class="c1"># -----------------------------</span>
+<span class="c1"># ADD TO CART (shared)</span>
+<span class="c1"># -----------------------------</span>
+<div class="viewcode-block" id="add_to_cart">
+<a class="viewcode-back" href="../../orders.html#orders.views.add_to_cart">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_to_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">product_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a product to the cart for both logged-in and guest users.</span>
+
+<span class="sd">    - Logged-in users: stored in the database.</span>
+<span class="sd">    - Guests: stored in the session.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">product</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Product</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">product_id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="n">cart</span> <span class="o">=</span> <span class="n">get_user_cart</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+        <span class="n">item</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">CartItem</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+            <span class="n">cart</span><span class="o">=</span><span class="n">cart</span><span class="p">,</span>
+            <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">created</span><span class="p">:</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">quantity</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">add_to_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> added to your cart.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;view_cart&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1"># VIEW CART (handles both)</span>
+<span class="c1"># ============================</span>
+<div class="viewcode-block" id="view_cart">
+<a class="viewcode-back" href="../../orders.html#orders.views.view_cart">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">view_cart</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Display the cart for both logged-in and guest users.</span>
+
+<span class="sd">    - Logged-in users: loads Cart and CartItems from the database.</span>
+<span class="sd">    - Guests: loads items from the session cart.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cart</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">cart</span>
+        <span class="k">except</span> <span class="n">Cart</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="n">cart</span> <span class="o">=</span> <span class="n">Cart</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+
+        <span class="n">items</span> <span class="o">=</span> <span class="n">cart</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;product&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span>
+            <span class="s2">&quot;orders/cart.html&quot;</span><span class="p">,</span>
+            <span class="p">{</span><span class="s2">&quot;cart&quot;</span><span class="p">:</span> <span class="n">cart</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="n">items</span><span class="p">},</span>
+        <span class="p">)</span>
+
+
+    <span class="c1"># Guest cart</span>
+    <span class="n">items</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="n">get_session_cart_items_with_totals</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span>
+        <span class="s2">&quot;orders/guest_cart.html&quot;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="n">items</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="n">total</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1"># UPDATE / REMOVE (logged-in)</span>
+<span class="c1"># ============================</span>
+<div class="viewcode-block" id="update_cart_item">
+<a class="viewcode-back" href="../../orders.html#orders.views.update_cart_item">[docs]</a>
+<span class="nd">@login_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_cart_item</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">item_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the quantity of a CartItem for a logged-in user.</span>
+
+<span class="sd">    If the new quantity is less than or equal to zero,</span>
+<span class="sd">      the item is removed</span>
+<span class="sd">    from the cart. Otherwise, the quantity is updated accordingly.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cart</span> <span class="o">=</span> <span class="n">get_user_cart</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+    <span class="n">item</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">CartItem</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">item_id</span><span class="p">,</span> <span class="n">cart</span><span class="o">=</span><span class="n">cart</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">new_qty</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quantity&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">new_qty</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">new_qty</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Item removed from cart.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">quantity</span> <span class="o">=</span> <span class="n">new_qty</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Cart updated.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;view_cart&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="remove_from_cart">
+<a class="viewcode-back" href="../../orders.html#orders.views.remove_from_cart">[docs]</a>
+<span class="nd">@login_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_from_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">item_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove a CartItem from the logged-in user&#39;s cart.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cart</span> <span class="o">=</span> <span class="n">get_user_cart</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+    <span class="n">item</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">CartItem</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">item_id</span><span class="p">,</span> <span class="n">cart</span><span class="o">=</span><span class="n">cart</span><span class="p">)</span>
+
+    <span class="n">item</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+    <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Item removed from cart.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;view_cart&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1"># UPDATE / REMOVE (guest)</span>
+<span class="c1"># ============================</span>
+<div class="viewcode-block" id="update_guest_cart_item">
+<a class="viewcode-back" href="../../orders.html#orders.views.update_guest_cart_item">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_guest_cart_item</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">product_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the quantity of a product in the guest session cart.</span>
+
+<span class="sd">    If the new quantity is zero or less, the item is removed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">new_qty</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quantity&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">new_qty</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">update_session_cart_item</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">new_qty</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">new_qty</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Item removed from cart.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Cart updated.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;view_cart&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="remove_guest_cart_item">
+<a class="viewcode-back" href="../../orders.html#orders.views.remove_guest_cart_item">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_guest_cart_item</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">product_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove a product entirely from the guest session cart.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">remove_from_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">product_id</span><span class="p">)</span>
+    <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Item removed from cart.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;view_cart&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1"># CHECKOUT (logged-in)</span>
+<span class="c1"># ============================</span>
+<div class="viewcode-block" id="checkout">
+<a class="viewcode-back" href="../../orders.html#orders.views.checkout">[docs]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@transaction</span><span class="o">.</span><span class="n">atomic</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">checkout</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process checkout for a logged-in user.</span>
+
+<span class="sd">    Workflow:</span>
+<span class="sd">        1. Ensure the cart is not empty.</span>
+<span class="sd">        2. Validate stock availability for each item.</span>
+<span class="sd">        3. Create an Order instance.</span>
+<span class="sd">        4. Create OrderItems and deduct product stock.</span>
+<span class="sd">        5. Clear the user&#39;s cart.</span>
+<span class="sd">        6. Send an invoice email.</span>
+
+<span class="sd">    The entire operation is wrapped in a database transaction to ensure</span>
+<span class="sd">    atomicity and prevent partial order creation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cart</span> <span class="o">=</span> <span class="n">get_user_cart</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="n">cart</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;product&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Your cart is empty.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;view_cart&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Validate stock</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">quantity</span> <span class="o">&gt;</span> <span class="n">item</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">stock</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="n">request</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;Not enough stock for </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Available: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">stock</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;view_cart&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create order</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">total</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">Order</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+        <span class="n">billing_email</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+        <span class="n">total_price</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
+        <span class="n">status</span><span class="o">=</span><span class="s2">&quot;PAID&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Create order items + deduct stock</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="n">OrderItem</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">product</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">product</span><span class="p">,</span>
+            <span class="n">product_name</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">quantity</span><span class="p">,</span>
+            <span class="n">price_at_purchase</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">price</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">item</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">stock</span> <span class="o">-=</span> <span class="n">item</span><span class="o">.</span><span class="n">quantity</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="c1"># Clear cart</span>
+    <span class="n">items</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+    <span class="c1"># Send invoice</span>
+    <span class="n">send_order_invoice_email</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+
+    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span>
+        <span class="s2">&quot;Checkout successful! Your order has been placed.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;order_detail&quot;</span><span class="p">,</span> <span class="n">order_id</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1"># CHECKOUT (guest)</span>
+<span class="c1"># ============================</span>
+<div class="viewcode-block" id="guest_checkout">
+<a class="viewcode-back" href="../../orders.html#orders.views.guest_checkout">[docs]</a>
+<span class="nd">@transaction</span><span class="o">.</span><span class="n">atomic</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">guest_checkout</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process checkout for a guest user using the session cart.</span>
+
+<span class="sd">    Workflow:</span>
+<span class="sd">        1. Ensure the cart is not empty.</span>
+<span class="sd">        2. Validate stock availability for each item.</span>
+<span class="sd">        3. Collect guest billing and shipping information.</span>
+<span class="sd">        4. Create an Order instance with guest-specific fields.</span>
+<span class="sd">        5. Create OrderItems and deduct product stock.</span>
+<span class="sd">        6. Clear the session cart.</span>
+<span class="sd">        7. Send an invoice email.</span>
+
+<span class="sd">    The entire operation is wrapped in a database transaction to ensure</span>
+<span class="sd">    atomicity and prevent partial order creation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">items</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="n">get_session_cart_items_with_totals</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Your cart is empty.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;view_cart&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Validate stock</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="n">product</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;product&quot;</span><span class="p">]</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">quantity</span> <span class="o">&gt;</span> <span class="n">product</span><span class="o">.</span><span class="n">stock</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="n">request</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;Not enough stock for </span><span class="si">{</span><span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. Available: </span><span class="si">{</span><span class="n">product</span><span class="o">.</span><span class="n">stock</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;view_cart&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">GuestCheckoutForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">cd</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span>
+
+            <span class="c1"># Create guest order</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">Order</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">billing_email</span><span class="o">=</span><span class="n">cd</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">],</span>
+                <span class="n">total_price</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
+                <span class="n">status</span><span class="o">=</span><span class="s2">&quot;PAID&quot;</span><span class="p">,</span>
+                <span class="n">guest_name</span><span class="o">=</span><span class="n">cd</span><span class="p">[</span><span class="s2">&quot;full_name&quot;</span><span class="p">],</span>
+                <span class="n">guest_email</span><span class="o">=</span><span class="n">cd</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">],</span>
+                <span class="n">guest_address</span><span class="o">=</span><span class="n">cd</span><span class="p">[</span><span class="s2">&quot;address&quot;</span><span class="p">],</span>
+                <span class="n">guest_city</span><span class="o">=</span><span class="n">cd</span><span class="p">[</span><span class="s2">&quot;city&quot;</span><span class="p">],</span>
+                <span class="n">guest_state</span><span class="o">=</span><span class="n">cd</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">],</span>
+                <span class="n">guest_zip</span><span class="o">=</span><span class="n">cd</span><span class="p">[</span><span class="s2">&quot;zip_code&quot;</span><span class="p">],</span>
+                <span class="n">guest_phone</span><span class="o">=</span><span class="n">cd</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;phone&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Create order items + deduct stock</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+                <span class="n">product</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;product&quot;</span><span class="p">]</span>
+                <span class="n">quantity</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]</span>
+
+                <span class="n">OrderItem</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                    <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span>
+                    <span class="n">product_name</span><span class="o">=</span><span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">quantity</span><span class="o">=</span><span class="n">quantity</span><span class="p">,</span>
+                    <span class="n">price_at_purchase</span><span class="o">=</span><span class="n">product</span><span class="o">.</span><span class="n">price</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">product</span><span class="o">.</span><span class="n">stock</span> <span class="o">-=</span> <span class="n">quantity</span>
+                <span class="n">product</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+            <span class="c1"># Clear session cart</span>
+            <span class="n">save_session_cart</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="p">{})</span>
+
+            <span class="c1"># Send invoice</span>
+            <span class="n">send_order_invoice_email</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+
+            <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                <span class="n">request</span><span class="p">,</span>
+                <span class="s2">&quot;Checkout successful! &quot;</span>
+                <span class="s2">&quot;Your order has been placed.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;order_detail&quot;</span><span class="p">,</span> <span class="n">order_id</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">GuestCheckoutForm</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span>
+        <span class="s2">&quot;orders/guest_checkout.html&quot;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s2">&quot;form&quot;</span><span class="p">:</span> <span class="n">form</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="n">items</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="n">total</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1"># ORDER DETAIL</span>
+<span class="c1"># ============================</span>
+<div class="viewcode-block" id="order_detail">
+<a class="viewcode-back" href="../../orders.html#orders.views.order_detail">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">order_detail</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">order_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Display the details of a specific order.</span>
+
+<span class="sd">    For authenticated users, ensure that only the owner of the order</span>
+<span class="sd">    may view it. Guest orders may be viewed by anyone with the link.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Order</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">order_id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">user</span> <span class="ow">and</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">user</span> <span class="o">!=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="n">request</span><span class="p">,</span>
+                <span class="s2">&quot;You do not have permission to view this order.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;product_list&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;orders/order_detail.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="n">order</span><span class="p">})</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1"># EMAIL INVOICE</span>
+<span class="c1"># ============================</span>
+<div class="viewcode-block" id="send_order_invoice_email">
+<a class="viewcode-back" href="../../orders.html#orders.views.send_order_invoice_email">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">send_order_invoice_email</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Send an invoice email for the given order.</span>
+
+<span class="sd">    Uses both a plain-text and HTML template. Sends to:</span>
+<span class="sd">        - order.billing_email (for logged-in users)</span>
+<span class="sd">        - order.guest_email (for guest checkout)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Your Order #</span><span class="si">{</span><span class="n">order</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> Invoice&quot;</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="n">order</span><span class="p">}</span>
+
+    <span class="n">message</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="s2">&quot;orders/email_invoice.txt&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+    <span class="n">html_message</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="s2">&quot;orders/email_invoice.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+
+    <span class="n">to_email</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="n">billing_email</span> <span class="ow">or</span> <span class="n">order</span><span class="o">.</span><span class="n">guest_email</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">to_email</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">send_mail</span><span class="p">(</span>
+        <span class="n">subject</span><span class="p">,</span>
+        <span class="n">message</span><span class="p">,</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_FROM_EMAIL</span><span class="p">,</span>
+        <span class="p">[</span><span class="n">to_email</span><span class="p">],</span>
+        <span class="n">html_message</span><span class="o">=</span><span class="n">html_message</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Jacob Saftig.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
